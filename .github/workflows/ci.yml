@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          global-json-file: global.json
+      - run: dotnet build Czechia.Cli.slnx --configuration Release
+      - run: dotnet test --solution Czechia.Cli.slnx --configuration Release --no-build
+      - run: dotnet pack src/Czechia.Cli --configuration Release --no-build --output artifacts

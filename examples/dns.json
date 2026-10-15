@@ -1,0 +1,10 @@
+{
+  "domain": "example.com",
+  "records": [
+    { "type": "A", "name": "app", "value": "192.0.2.10", "ttl": 300 },
+    { "type": "A", "name": "app-test", "value": "192.0.2.10", "ttl": 300 },
+    { "type": "AAAA", "name": "ipv6", "value": "2001:db8::10", "ttl": 300 },
+    { "type": "CNAME", "name": "www", "value": "app.example.com.", "ttl": 300 },
+    { "type": "TXT", "name": "_example", "value": "example-verification", "ttl": 300 }
+  ]
+}
