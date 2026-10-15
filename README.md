@@ -8,8 +8,7 @@ Projekt není produktem ani oficiálním klientem společnosti ZONER.
 
 Balíček se jmenuje `Czechia.Cli`, nainstalovaný příkaz je `czechia`.
 Vyžaduje .NET 10 runtime a pro instalaci příkazu `dotnet tool` také .NET SDK.
-První vydání 0.1.0 připravuje workflow popsaný níže; dokud neproběhne úspěšná publikace,
-použijte instalaci ze zdrojů.
+První vydání je `0.1.0`; další verze vydává workflow popsaný níže.
 
 ```powershell
 dotnet tool install --global Czechia.Cli
