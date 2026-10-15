@@ -109,3 +109,5 @@ dotnet test --solution Czechia.Cli.slnx --configuration Release
 Testy používají simulované HTTP odpovědi a neprovádějí živé změny DNS.
 CI ověřuje Windows a Linux. Žádné skutečné přihlašovací údaje do CI nevkládejte.
 Podporovaný kontrakt vychází z [OpenAPI poskytovatele](https://api.czechia.com/swagger/index.html).
+
+Licence: [MIT](LICENSE).
