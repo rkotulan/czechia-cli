@@ -4,10 +4,30 @@ Neoficiální nástroj pro správu DNS přes REST API [CZECHIA](https://www.czec
 Samostatný .NET 10 CLI nástroj pro Windows, Linux a macOS, bez externích runtime knihoven.
 Projekt není produktem ani oficiálním klientem společnosti ZONER.
 
+## Instalace z NuGet.org
+
+Balíček se jmenuje `Czechia.Cli`, nainstalovaný příkaz je `czechia`.
+Vyžaduje .NET 10 runtime a pro instalaci příkazu `dotnet tool` také .NET SDK.
+První vydání 0.1.0 připravuje workflow popsaný níže; dokud neproběhne úspěšná publikace,
+použijte instalaci ze zdrojů.
+
+```powershell
+dotnet tool install --global Czechia.Cli
+czechia --help
+```
+
+Aktualizace:
+
+```powershell
+dotnet tool update --global Czechia.Cli
+```
+
+Odinstalace: `dotnet tool uninstall --global Czechia.Cli`.
+Publikovaná vydání: [NuGet.org](https://www.nuget.org/packages/Czechia.Cli).
+
 ## Instalace ze zdrojů
 
 Vyžaduje .NET SDK 10 (verze podle `global.json` nebo novější kompatibilní feature band).
-Balíček zatím není publikovaný na NuGet.org.
 
 ```powershell
 git clone https://github.com/rkotulan/czechia-cli.git
@@ -107,7 +127,22 @@ dotnet test --solution Czechia.Cli.slnx --configuration Release
 ```
 
 Testy používají simulované HTTP odpovědi a neprovádějí živé změny DNS.
-CI ověřuje Windows a Linux. Žádné skutečné přihlašovací údaje do CI nevkládejte.
+CI ověřuje Windows a Linux. Skutečné přihlašovací údaje nepatří do zdrojových souborů ani testů.
 Podporovaný kontrakt vychází z [OpenAPI poskytovatele](https://api.czechia.com/swagger/index.html).
+
+## Vydávání
+
+V GitHub repozitáři musí být secret `NUGET_API_KEY` s NuGet.org API klíčem,
+který dovoluje publikaci balíčku `Czechia.Cli`. Klíč nepatří do souborů repozitáře.
+
+1. Nastavte novou verzi v `src/Czechia.Cli/Czechia.Cli.csproj` a změny commitněte a pushněte.
+2. Vytvořte a pushněte odpovídající tag, například `git tag v0.1.0` a `git push origin v0.1.0`.
+3. Workflow `Publish to NuGet.org` nejdříve ověří build a testy na Windows i Linuxu.
+   Pak ověří shodu tagu s verzí projektu, vytvoří balíček, vyzkouší instalaci a offline plán
+   a nahraje balíček na NuGet.org.
+
+Každá verze je neměnná; již publikované číslo nelze přepsat.
+Při selhání ověřte nejdřív stav balíčku na NuGet.org a až potom opakujte běh nebo vydejte novou verzi.
+Po úspěšné publikaci může chvíli trvat indexace a dostupnost pro instalaci.
 
 Licence: [MIT](LICENSE).

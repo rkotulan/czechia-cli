@@ -1,0 +1,59 @@
+name: Publish to NuGet.org
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nuget-publish
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Validate release tag and credentials
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          version="$(dotnet msbuild src/Czechia.Cli/Czechia.Cli.csproj -getProperty:Version -nologo)"
+          if [[ "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "Release tag must match project version: v$version" >&2
+            exit 1
+          fi
+          if [[ -z "$NUGET_API_KEY" ]]; then
+            echo "Missing repository secret NUGET_API_KEY." >&2
+            exit 1
+          fi
+      - name: Pack tool
+        run: dotnet pack src/Czechia.Cli --configuration Release --output artifacts
+      - name: Verify packaged tool
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet tool install Czechia.Cli --version "${GITHUB_REF_NAME#v}" --tool-path .czechia/smoke --add-source ./artifacts
+          ./.czechia/smoke/czechia --help
+          ./.czechia/smoke/czechia dns plan examples/dns.json --zone examples/empty-zone.json
+      - name: Publish tool
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet nuget push artifacts/Czechia.Cli.*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
